@@ -1,0 +1,19 @@
+name: environment
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  # core python
+  - python=3.6
+  - requests
+  - Flask
+  - geojson
+  - pymongo
+  - shapely
+  - geocoder
+  - numpy
+  - networkx
+  - gunicorn
+  - pip
+  - pip:
+    - ortools
