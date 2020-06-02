@@ -145,7 +145,7 @@ class RouteOptimizer():
         Create list that keeps track of which group 
         (connnected component) each node belongs to
         """
-        d = list(nx.connected_component_subgraphs(self.trail_network))
+        d = list(self.trail_network.subgraph(c) for c in nx.connected_components(self.trail_network))
         for i, group in enumerate(d):
             for node in group:
                 self.path_groups[node] = i

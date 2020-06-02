@@ -1,8 +1,9 @@
 import random
-import requests
 import dbConn
-
+from flask import jsonify
 from tripopt import RouteOptimizer
+
+import shapely.wkb as wkb
 
 from shapely.geometry import MultiLineString, Point
 from shapely import ops
@@ -12,13 +13,9 @@ import os
 import json
 import numpy as np
 import geocoder
-import config
 
-from flask import Flask, request, jsonify
-from flask_cors import CORS
 
-app = Flask(__name__)
-CORS(app)
+
 
 global km_to_degree 
 global snap_tolerance 
@@ -50,6 +47,11 @@ class Track():
         self.parse_hex(filename)  
     
     def parse_hex(self, trail): 
+        #self.points = trail[1]['geometry']['coordinates'] # get trail coordinates from Line String geometry from GeoJSON -> (long, lat, elevation (meters))
+        #self.points = np.array(self.points) # place coordinates into an array
+        #self.points = self.points[:,:2] # remove elevation from each coordinate point
+        #self.track = self.check_track(MultiLineString([self.points]))
+        #self.name = trail[1]['properties']['name']
         geom = wkb.loads(trail[1], hex=True)
         xy = geom.xy
         self.points = []
@@ -327,11 +329,11 @@ class TripPlanner():
         if self.tracks:
             return self.tracks
             
-        for geoj in self.file_list:
+        for geoj in self.file_list: # this is going to loop through ('trail_name', 'hex value of geometry')
             try: # only valid trails can be returned from mongo, so maybe don't need this anymore
                 geotrack = Track(geoj) # track takes filename 
                 self.tracks[geotrack.name] = geotrack
-            except Exception as e:
+            except Exception as e:# this is a dated exception with PostGIS db
                 print(e)
                 raise Exception("Could not load track %s" % geoj[1]['properties']['name'])        
         return self.tracks
@@ -387,7 +389,7 @@ class TripPlanner():
 
 
 def LocationName(location):
-    g = geocoder.google(location,key = config.geoencoder_key)
+    g = geocoder.google(location,key = 'AIzaSyDRiuYBr4KXG-c2U09_JChZd_rCq4JkoB0')
     print(g.latlng)
     return g.latlng
 
@@ -427,11 +429,8 @@ def save_gpx(optimized_network, file_location, gpx_type = "optimization"):
         optimized_network.save_gpx(Path, file_location)
     
 
-@app.route('/newtrip', methods=["POST"])
-def run_system():
-    location = request.args['location']
-    distance = int(request.args['distance'])*1000
-    tripLength = int(request.args['tripLength'])
+
+def run_system(location, distance, tripLength):
     
     if location: 
         location = " ".join(location)
@@ -447,22 +446,14 @@ def run_system():
 
     coords = LocationName(location)
     trails = dbConn.getTrails_sql(coords[1], coords[0], distance)   
+    if (trails == []):
+        return "No Trails"
     network = setup_trips(trails, location)
     trip = create_trip(network, maxdist = tripLength)
     json = trip.save_geojson(Path)
-    return jsonify(json)
+    trip.save_gpx(Path)
+    return json
 
-@app.route('/test', methods=["GET"])
-def run():
-    return "200"
-
-@app.errorhandler(502)
-def server_error(e):
-    logging.exception('An error occurred during a request.')
-    return """
-    An internal error occurred: <pre>{}</pre>
-    See logs for full stacktrace.
-    """.format(e), 502
     
     
     
