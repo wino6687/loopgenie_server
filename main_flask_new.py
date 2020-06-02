@@ -4,6 +4,7 @@ from flask import jsonify
 from tripopt import RouteOptimizer
 
 import shapely.wkb as wkb
+import config
 
 from shapely.geometry import MultiLineString, Point
 from shapely import ops
@@ -394,7 +395,7 @@ class TripPlanner():
 
 
 def LocationName(location):
-    g = geocoder.google(location,key = 'AIzaSyDRiuYBr4KXG-c2U09_JChZd_rCq4JkoB0')
+    g = geocoder.google(location,key = config.geoencoder_key)
     print(g.latlng)
     return g.latlng
 
