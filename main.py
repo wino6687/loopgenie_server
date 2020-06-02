@@ -13,6 +13,7 @@ import os
 import json
 import numpy as np
 import geocoder
+import config
 
 
 
@@ -389,7 +390,7 @@ class TripPlanner():
 
 
 def LocationName(location):
-    g = geocoder.google(location,key = 'AIzaSyDRiuYBr4KXG-c2U09_JChZd_rCq4JkoB0')
+    g = geocoder.google(location,key = config.geoencoder_key)
     print(g.latlng)
     return g.latlng
 
