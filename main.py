@@ -47,14 +47,16 @@ class Track():
         self.paths            = {}
         self.filename         = filename
         
-        self.parse_geojson(filename)  
+        self.parse_hex(filename)  
     
-    def parse_geojson(self, trail): 
-        self.points = trail[1]['geometry']['coordinates'] # get trail coordinates from Line String geometry from GeoJSON -> (long, lat, elevation (meters))
-        self.points = np.array(self.points) # place coordinates into an array
-        self.points = self.points[:,:2] # remove elevation from each coordinate point
-        self.track = self.check_track(MultiLineString([self.points]))
-        self.name = trail[1]['properties']['name']
+    def parse_hex(self, trail): 
+        geom = wkb.loads(trail[1], hex=True)
+        xy = geom.xy
+        self.points = []
+        for i in range(len(geom.xy[0])):
+            self.points.append((xy[0][i],xy[1][i]))
+        self.name = trail[0]
+        self.track = self.check_track(geom)
         
         
     def check_track(self, track):
@@ -444,7 +446,7 @@ def run_system():
         tripLength = 30    
 
     coords = LocationName(location)
-    trails = dbConn.getTrails(coords[1], coords[0], distance)   
+    trails = dbConn.getTrails_sql(coords[1], coords[0], distance)   
     network = setup_trips(trails, location)
     trip = create_trip(network, maxdist = tripLength)
     json = trip.save_geojson(Path)
