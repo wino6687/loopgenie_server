@@ -9,7 +9,6 @@ from shapely import ops
 import itertools
 import networkx as nx
 import os
-import json
 import numpy as np
 import geocoder
 import config

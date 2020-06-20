@@ -1,7 +1,9 @@
-geojson
-networkx
-shapely
-geocoder
-ortools
+# Core
 numpy
+networkx
+geocoder
+shapely
+# Solver
+geojson
+ortools
 pyscopg2
