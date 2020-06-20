@@ -1,8 +1,6 @@
-Flask
 geojson
 geopy
 gpxpy
-pymongo
 shapely
 geocoder
 ortools

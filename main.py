@@ -1,6 +1,5 @@
 import random
 import dbConn
-from flask import jsonify
 from tripopt import RouteOptimizer
 
 import shapely.wkb as wkb
