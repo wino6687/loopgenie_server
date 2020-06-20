@@ -1,6 +1,5 @@
 geojson
 geopy
-gpxpy
 shapely
 geocoder
 ortools
