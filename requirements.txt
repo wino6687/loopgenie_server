@@ -1,5 +1,6 @@
 geojson
 geopy
+networkx
 shapely
 geocoder
 ortools
