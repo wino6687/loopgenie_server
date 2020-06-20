@@ -15,8 +15,6 @@ import geocoder
 import config
 
 
-
-
 global km_to_degree 
 global snap_tolerance 
 km_to_degree   = 111
@@ -451,7 +449,6 @@ def run_system(location, distance, tripLength):
     network = setup_trips(trails, location)
     trip = create_trip(network, maxdist = tripLength)
     json = trip.save_geojson(Path)
-    trip.save_gpx(Path)
     return json
 
     
