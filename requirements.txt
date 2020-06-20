@@ -1,7 +1,7 @@
 geojson
-geopy
 networkx
 shapely
 geocoder
 ortools
 numpy
+pyscopg2
