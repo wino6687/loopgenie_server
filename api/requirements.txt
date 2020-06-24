@@ -1,0 +1,12 @@
+Flask
+geojson
+geopy
+psycopg2
+shapely
+geocoder
+ortools
+requests
+numpy
+networkx
+gunicorn
+flask-cors

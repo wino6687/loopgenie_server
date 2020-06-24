@@ -1,7 +1,6 @@
 from ortools.linear_solver import pywraplp
 import networkx as nx
 from shapely.geometry import Point, LineString, MultiLineString
-import gpxpy
 import os
 import geojson
 
@@ -228,62 +227,6 @@ class RouteOptimizer():
         
         geom_in_geojson = geojson.Feature(geometry=MultiLineString(lines), properties={})
         return geojson.dumps(geom_in_geojson)
-        
-        
-    def save_gpx(self, path_object, filename="saved_trips/temp.gpx"):
-        """
-        Paths is the values from .get_results() function
-        for the solved LP problem
-        """
-        
-        # Need some way to order the results together
-        if not self.results:
-            self.get_results()
-        
-        results = self.results
-        
-        self.make_new_gpx(filename)
-        gpx_file = open(filename, 'r')
-        gpx = gpxpy.parse(gpx_file)
-        gpx       = gpxpy.gpx.GPX()
-        
-        gpx_segment = {}
-        for path_name in results:
-            gpx_track = gpxpy.gpx.GPXTrack()
-            gpx.tracks.append(gpx_track)
-            gpx_segment[path_name] = gpxpy.gpx.GPXTrackSegment()
-            gpx_track.segments.append(gpx_segment[path_name])
-            
-            path = path_object.get(path_name).points
-            if path.type == 'LineString':
-                points = path.coords
-            
-            else:
-                points = path[0].coords
-    
-            for coord in points:
-                gpx_segment[path_name].points.append(gpxpy.gpx.GPXTrackPoint(coord[1], coord[0]))
-        
-        f = open(filename, 'w+')
-        f.write(gpx.to_xml())
-        f.close()
-        
-    
-    def make_new_gpx(self, filename = "saved_trips/output.gpx"):
-        import xml.etree.cElementTree as ET
-        if not os.path.exists(os.path.dirname(filename)):
-            try:
-                os.makedirs(os.path.dirname(filename))
-            except OSError as exc: # Guard against race condition
-                if exc.errno != errno.EEXIST:
-                    raise
-        gpx = ET.Element("gpx")
-        metadata = ET.SubElement(gpx, "metadata")
-        link = ET.SubElement(metadata, "link", href="http://placeholder")
-        ET.SubElement(link,"text").text="Backpacking XML Generator"
-        
-        tree = ET.ElementTree(gpx)
-        tree.write(filename)
     
 
 
