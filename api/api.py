@@ -53,11 +53,6 @@ class Track():
         self.parse_hex(filename)  
     
     def parse_hex(self, trail): 
-        #self.points = trail[1]['geometry']['coordinates'] # get trail coordinates from Line String geometry from GeoJSON -> (long, lat, elevation (meters))
-        #self.points = np.array(self.points) # place coordinates into an array
-        #self.points = self.points[:,:2] # remove elevation from each coordinate point
-        #self.track = self.check_track(MultiLineString([self.points]))
-        #self.name = trail[1]['properties']['name']
         geom = wkb.loads(trail[1], hex=True)
         xy = geom.xy
         self.points = []

@@ -372,6 +372,7 @@ class TripPlanner():
                
             
         pass 
+    
     def add_paths(self):
         """
         Creates a simplified, relational path network for the LP problem
