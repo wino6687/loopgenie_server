@@ -53,6 +53,9 @@ class Track():
         self.parse_hex(filename)  
     
     def parse_hex(self, trail): 
+        """
+        PostGIS returns geo objects in hex format. Grab all of the points to build tracks
+        """
         geom = wkb.loads(trail[1], hex=True)
         xy = geom.xy
         self.points = []
