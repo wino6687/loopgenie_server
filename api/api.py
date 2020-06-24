@@ -376,6 +376,7 @@ class TripPlanner():
                
             
         pass 
+
     def add_paths(self):
         """
         Creates a simplified, relational path network for the LP problem
@@ -458,7 +459,7 @@ def run_system():
     trip.save_gpx(Path)
     return jsonify(json)
 
-    @app.route('/test', methods=["GET"])
+@app.route('/test', methods=["GET"])
 def run():
     return "200"
 
