@@ -43,7 +43,7 @@ snap_tolerance = 1e-4
 class Track():
     def __init__(self, filename):
         self.name             = None
-        self.track            = None
+        self.track            = None # track is a shapely geometry 
         self.points           = None
         self.connected_tracks = {}
         self.node_dict        = {}
@@ -151,7 +151,7 @@ class Track():
                 node_pos            = self.track.project(node_pt)
                 if self.check_precision(node_pos, node_dict):
                     # There is a tolerance issue with establishing nodes.
-                    # Shapely is unable to snap nodes with enough percision
+                    # Shapely is unable to snap nodes with enough precision
                     # To create meaningful segments. 
                     node_dict[node_pos] = node_pt
 
@@ -335,7 +335,7 @@ class TripPlanner():
             
         for geoj in self.file_list: # this is going to loop through ('trail_name', 'hex value of geometry')
             try: # only valid trails can be returned from mongo, so maybe don't need this anymore
-                geotrack = Track(geoj) # track takes filename 
+                geotrack = Track(geoj) # track takes tuple ('trail name', hexval)
                 self.tracks[geotrack.name] = geotrack
             except Exception as e:# this is a dated exception with PostGIS db
                 print(e)
@@ -377,7 +377,6 @@ class TripPlanner():
                 self.trail_network.add_node(path.destination)
                 self.trail_network.add_edge(path.origin, path.destination, length=path.distance, name=key) 
                
-            
         pass 
 
     def add_paths(self):
@@ -456,7 +455,7 @@ def run_system():
     trails = dbConn.getTrails_sql(coords[1], coords[0], distance)   
     if (trails == []):
         return "No Trails"
-    network = setup_trips(trails, location)
+    network = setup_trips(trails, location) # not really network, TripPlanner obj with network in it 
     trip = create_trip(network, maxdist = tripLength)
     json = trip.save_geojson(Path)
     trip.save_gpx(Path)
@@ -475,3 +474,7 @@ def server_error(e):
     An internal error occurred: <pre>{}</pre>
     See logs for full stacktrace.
     """.format(e), 502
+
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', debug=True, port=80)
