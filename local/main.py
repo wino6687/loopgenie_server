@@ -11,6 +11,7 @@ import networkx as nx
 import os
 import json
 import numpy as np
+import requests
 import geocoder
 import config
 
@@ -387,23 +388,11 @@ class TripPlanner():
 
 
 def LocationName(location):
-    url = "https://{}.execute-api.us-east-2.amazonaws.com/Prod/geocode/api/v1/geocode?q={}"\
-        .format(config.api_code, location)
+    url = "https://{}.execute-api.us-east-2.amazonaws.com/Prod/geocode/api/v1/geocode?q={}".format(config.api_code, location)
     response = requests.request("GET", url)
     json = response.json()['items'][0]["position"]
     lat, lon = json['lat'], json['lng']
     return [lat,lon]
-
-# will deprecate this function once we work with the frontend
-def setup_argparser():
-    import argparse
-    parser = argparse.ArgumentParser(description='Generate Backpacking Trips')
-    parser.add_argument('-location', 
-                        help='the location to generate combined trails for', nargs='+')
-    parser.add_argument('-distance', help="the distance from the location to collect trails", type=int)
-    parser.add_argument('-triplength', help="the length of the trip in km", type=int)
-    args = parser.parse_args()
-    return args
 
 def setup_trips(trails, location):
     """
@@ -432,9 +421,6 @@ def save_gpx(optimized_network, file_location, gpx_type = "optimization"):
 
 
 def run_system(location, distance, tripLength):
-    
-    if location: 
-        location = " ".join(location)
 
     if not location:
         raise Exception("No location has been provided")
