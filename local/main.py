@@ -429,16 +429,18 @@ def run_system(location, distance, tripLength):
         distance = 10
         
     if not tripLength:
-        tripLength = 30    
+        tripLength = 30
 
+    output_location = os.getcwd() + "/saved_trips/{}.gpx".format(location)    
     coords = LocationName(location)
     trails = dbConn.getTrails(coords[1], coords[0], distance*1000)   
     if (trails == []):
         return "No Trails"
     network = setup_trips(trails, location)
     trip = create_trip(network, maxdist = tripLength)
-    json = trip.save_geojson(Path)
-    return json
+    geojson = trip.save_geojson(Path)
+    save_gpx(trip, output_location)
+    return geojson
 
     
     
