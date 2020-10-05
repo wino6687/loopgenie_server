@@ -36,6 +36,8 @@ The geocoder we are currently using requires specificity.
 
 If I input ```location="Boulder"```, it will reutrn every matching "Boulder" location: 
 
+Note: This is a shortened result (There are 6 cities matching "Boulder" in the US)
+
 ```{json}
 {
     "items": [
@@ -127,70 +129,6 @@ If I input ```location="Boulder"```, it will reutrn every matching "Boulder" loc
                 "south": 46.22808,
                 "east": -112.10726,
                 "north": 46.24534
-            },
-            "scoring": {
-                "queryScore": 1,
-                "fieldScore": {
-                    "city": 1
-                }
-            }
-        },
-        {
-            "title": "Boulder, WY, United States",
-            "id": "here:cm:namedplace:21103666",
-            "resultType": "locality",
-            "localityType": "city",
-            "address": {
-                "label": "Boulder, WY, United States",
-                "countryCode": "USA",
-                "countryName": "United States",
-                "stateCode": "WY",
-                "state": "Wyoming",
-                "county": "Sublette",
-                "city": "Boulder",
-                "postalCode": "82923"
-            },
-            "position": {
-                "lat": 42.74961,
-                "lng": -109.71416
-            },
-            "mapView": {
-                "west": -110.18101,
-                "south": 42.26341,
-                "east": -109.04349,
-                "north": 42.85845
-            },
-            "scoring": {
-                "queryScore": 1,
-                "fieldScore": {
-                    "city": 1
-                }
-            }
-        },
-        {
-            "title": "Boulder, UT, United States",
-            "id": "here:cm:namedplace:21035562",
-            "resultType": "locality",
-            "localityType": "city",
-            "address": {
-                "label": "Boulder, UT, United States",
-                "countryCode": "USA",
-                "countryName": "United States",
-                "stateCode": "UT",
-                "state": "Utah",
-                "county": "Garfield",
-                "city": "Boulder",
-                "postalCode": "84716"
-            },
-            "position": {
-                "lat": 37.90162,
-                "lng": -111.42475
-            },
-            "mapView": {
-                "west": -111.46042,
-                "south": 37.85751,
-                "east": -111.40507,
-                "north": 37.98804
             },
             "scoring": {
                 "queryScore": 1,
