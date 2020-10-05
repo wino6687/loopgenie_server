@@ -1,20 +1,33 @@
 import psycopg2
 import config
+import logging
+import sys
 
 
 def getTrails_sql(long, lat, rad):
     """
     query trails from new postGIS db
     """
-    conn = psycopg2.connect(user = config.post_user,
-                                    password = config.post_password,
-                                    port = '5432',
-                                    database = 'trails',
-                                    host= 'trails.ctluwc1bi2yb.us-east-2.rds.amazonaws.com')
-    cursor = conn.cursor()
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    try:
+        conn = psycopg2.connect(user = config.post_user,
+                                        password = config.post_password,
+                                        port = '5432',
+                                        database = 'trails',
+                                        host= 'trails.ctluwc1bi2yb.us-east-2.rds.amazonaws.com')
+    except:
+        logger.error("ERROR: Could not connect to Postgres instance.")
+        sys.exit()
+
+    logger.info("SUCCESS: Connection to RDS Postgres instance succeeded.")
+
     select_query = "SELECT name, wkb_geometry FROM geom WHERE ST_DWithin(wkb_geometry, ST_MakePoint({}, {})::geography, {});".format(long, lat, rad)
-    cursor.execute(select_query)
-    trails = cursor.fetchall()
+    
+    with conn.cursor() as cur:
+        cur.execute(select_query)
+        trails = cur.fetchall()
     return trails
     
 
