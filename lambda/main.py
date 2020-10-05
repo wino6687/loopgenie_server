@@ -387,7 +387,7 @@ def LocationName(location):
     """
     Geocode location using RestAPI in another lambda app within our VPC
     """
-    url = "https://{}.execute-api.us-east-2.amazonaws.com/Prod/geocode/api/v1/geocode?q={}".format(os.environ['API_CODE'], location)
+    url = "https://{}.execute-api.us-east-2.amazonaws.com/Prod/geocode/api/v1/geocode?q={}".format(os.environ['API_DNS'], location)
     response = requests.request("GET", url)
     json = response.json()['items'][0]["position"]
     lat, lon = json['lat'], json['lng']
