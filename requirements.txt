@@ -6,4 +6,5 @@ requests
 # Solver
 geojson
 ortools
-pyscopg2
+psycopg2
+gpxpy
