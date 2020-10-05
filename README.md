@@ -32,11 +32,11 @@ You can either load the geojson output directly into a mapping library or use th
 
 ### Location Tips: 
 
-The geocoder we are currently using requires specificity. 
+The geocoder we are currently using requires specificity. If you enter a location with multiple matches, we will choose the first result (most likely choice).
 
-If I input ```location="Boulder"```, it will reutrn every matching "Boulder" location: 
+If I input ```location="Boulder"```, it will return every matching "Boulder" location: 
 
-Note: This is a shortened result (There are 6 cities matching "Boulder" in the US)
+Note: This is a shortened result (There are 6 cities matching "Boulder" in the US), we would choose Boulder, CO since it is the more common request. 
 
 ```{json}
 {
