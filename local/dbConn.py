@@ -4,7 +4,7 @@ import logging
 import sys
 
 
-def getTrails_sql(long, lat, rad):
+def getTrails(long, lat, rad):
     """
     query trails from new postGIS db
     """

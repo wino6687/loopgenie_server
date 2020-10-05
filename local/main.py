@@ -432,7 +432,7 @@ def run_system(location, distance, tripLength):
         tripLength = 30    
 
     coords = LocationName(location)
-    trails = dbConn.getTrails_sql(coords[1], coords[0], distance*1000)   
+    trails = dbConn.getTrails(coords[1], coords[0], distance*1000)   
     if (trails == []):
         return "No Trails"
     network = setup_trips(trails, location)
