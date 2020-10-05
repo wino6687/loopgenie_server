@@ -1,7 +1,6 @@
 from ortools.linear_solver import pywraplp
 import networkx as nx
 from shapely.geometry import Point, LineString, MultiLineString
-import gpxpy
 import os
 import geojson
 
@@ -235,6 +234,7 @@ class RouteOptimizer():
         Paths is the values from .get_results() function
         for the solved LP problem
         """
+        import gpxpy
         
         # Need some way to order the results together
         if not self.results:

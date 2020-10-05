@@ -1,9 +1,7 @@
 import random
 import dbConn
 from tripopt import RouteOptimizer
-
 import shapely.wkb as wkb
-
 from shapely.geometry import MultiLineString, Point
 from shapely import ops
 import itertools
@@ -12,8 +10,6 @@ import os
 import json
 import numpy as np
 import requests
-import geocoder
-import config
 
 
 global km_to_degree 
@@ -381,6 +377,15 @@ class TripPlanner():
                 if node not in self.nodes:
                     self.nodes.append(node)            
 
+def setup_argparser():
+    import argparse
+    parser = argparse.ArgumentParser(description='Generate Backpacking Trips')
+    parser.add_argument('-location', 
+                        help='the location to generate combined trails for', nargs='+')
+    parser.add_argument('-distance', help="the distance from the location to collect trails", type=int)
+    parser.add_argument('-triplength', help="the length of the trip in km", type=int)
+    args = parser.parse_args()
+    return args
 
 def LocationName(location):
     url = "https://{}.execute-api.us-east-2.amazonaws.com/Prod/geocode/api/v1/geocode?q={}".format(os.environ['API_DNS'], location)
@@ -413,31 +418,44 @@ def save_gpx(optimized_network, file_location, gpx_type = "optimization"):
     if gpx_type == "optimization":
         optimized_network.save_gpx(Path, file_location)
     
+def lambda_helper(location, distance, tripLength):
+    '''
+    AWS Lambda implementation wants geojson returned and no filesystem access
+    '''
+    trip = main(location, distance, tripLength)
+    return trip.save_geojson(Path)
 
-
-def run_system(location, distance, tripLength):
-
-    if not location:
-        raise Exception("No location has been provided")
-        
-    if not distance:
-        distance = 10
-        
-    if not tripLength:
-        tripLength = 30
-
-    output_location = os.getcwd() + "/saved_trips/{}.gpx".format(location)    
+def main(location, distance, tripLength):
+    '''
+    Function to run trip creation either for command line or imported 
+    '''
     coords = LocationName(location)
     trails = dbConn.getTrails(coords[1], coords[0], distance*1000)   
     if (trails == []):
-        return "No Trails"
+        raise Exception("No trails found in that area, please increase distance or change locations")
     network = setup_trips(trails, location)
     trip = create_trip(network, maxdist = tripLength)
-    geojson = trip.save_geojson(Path)
-    save_gpx(trip, output_location)
-    return geojson
+    print("Total Trip Length: %s km" % trip.objective.Value())
+    return trip
 
-    
-    
-    
-    
+if __name__ == '__main__':
+    location = None
+    args = setup_argparser()
+    distance = args.distance
+    tripLength = args.triplength
+    if args.location:
+        location = " ".join(args.location)
+
+    if not location:
+        raise Exception("No location has been provided. Please use the --location argument")
+
+    if not distance:
+        distance = 10
+        
+    if not length:
+        length = 30   
+
+    output_location = os.getcwd() + "/saved_trips/{}.gpx".format(location)
+
+    trip = run_system(location, distance, tripLength)
+    save_gpx(trip, output_location)
