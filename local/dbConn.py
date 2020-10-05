@@ -1,7 +1,7 @@
 import psycopg2
-import config
 import logging
 import sys
+import os
 
 
 def getTrails(long, lat, rad):
@@ -12,8 +12,8 @@ def getTrails(long, lat, rad):
     logger.setLevel(logging.INFO)
 
     try:
-        conn = psycopg2.connect(user = config.post_user,
-                                        password = config.post_password,
+        conn = psycopg2.connect(user = os.environ['POST_USER'],
+                                        password = os.environ['POST_PASSWORD'],
                                         port = '5432',
                                         database = 'trails',
                                         host= 'trails.ctluwc1bi2yb.us-east-2.rds.amazonaws.com')

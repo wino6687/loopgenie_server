@@ -383,7 +383,7 @@ class TripPlanner():
 
 
 def LocationName(location):
-    url = "https://{}.execute-api.us-east-2.amazonaws.com/Prod/geocode/api/v1/geocode?q={}".format(config.api_code, location)
+    url = "https://{}.execute-api.us-east-2.amazonaws.com/Prod/geocode/api/v1/geocode?q={}".format(os.environ['API_DNS'], location)
     response = requests.request("GET", url)
     json = response.json()['items'][0]["position"]
     lat, lon = json['lat'], json['lng']
