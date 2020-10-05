@@ -1,0 +1,15 @@
+name: loopgenie_env
+channels: 
+    - conda-forge
+    - defaults 
+dependencies: 
+    - python=3.8
+    - numpy
+    - shapely
+    - networkx
+    - requests
+    - geojson
+    - psycopg2
+    - gpxpy
+    - pip:
+        - ortools
