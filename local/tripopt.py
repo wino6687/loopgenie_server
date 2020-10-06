@@ -196,7 +196,7 @@ class RouteOptimizer():
 
     def get_results(self):
         results = []
-        print("Total Trip Length: %s km" % self.objective.Value())
+        # print("Total Trip Length: %s km" % self.objective.Value())
         for key in self.variables:
             intvar = self.variables[key]
             if intvar.solution_value() > 0:
@@ -235,7 +235,7 @@ class RouteOptimizer():
         for the solved LP problem
         """
         import gpxpy
-        
+
         # Need some way to order the results together
         if not self.results:
             self.get_results()

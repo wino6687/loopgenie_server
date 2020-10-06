@@ -417,17 +417,19 @@ def create_trip(trip_db, maxdist=30):
 def save_gpx(optimized_network, file_location, gpx_type = "optimization"):
     if gpx_type == "optimization":
         optimized_network.save_gpx(Path, file_location)
-    
-def lambda_helper(location, distance, tripLength):
-    '''
-    AWS Lambda implementation wants geojson returned and no filesystem access
-    '''
-    trip = main(location, distance, tripLength)
-    return trip.save_geojson(Path)
 
 def main(location, distance, tripLength):
     '''
     Function to run trip creation either for command line or imported 
+
+    Parameters:
+    -----------
+    location: string 
+        Location to base search off of. Geoencoder prefers specific locations.
+    distance: int
+        The radius that you are willing to drive to get to trails in km
+    tripLength: int
+        The distance you would like to hike in km
     '''
     coords = LocationName(location)
     trails = dbConn.getTrails(coords[1], coords[0], distance*1000)   
