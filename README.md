@@ -28,8 +28,6 @@ mapper.save_gpx(trip, os.getcwd() + "/saved_trips/Squaw_Valley.gpx")
 geojson = trip.save_geojson(mapper.Path)
 ```
 
-You can either load the geojson output directly into a mapping library or use the automatically save GPX file in the ```/save_trips``` directory. 
-
 ## Use Tips
 
 ### Location Tips: 
