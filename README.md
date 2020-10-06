@@ -1,29 +1,31 @@
 # loopgenie_server
 
-This repo contains loopgenie code for three different platforms: 
+This repo contains the server code for LoopGenie. The code is designed to run on AWS Lambda, but it also can be run locally with either command line execution or imported as a module. 
 
-- Local
-  - To be run on your own machine. Requires a config file with the needed access information to our PostGIS RDS database and our geolocater api. 
-
-- AWS Lambda 
-  - Production code that runs in our lambda function to support the website. 
-
-- Flask Application (api) 
-  - Flask application version that is no longer in use. This is how we initially hosted the server code, but found lambda to be more cost efficient. 
+**Note**: To run this code locally, you will need access to certain environment variables for accessing our trail database and geoencoding api. Using our website is free though!
 
 
 ## Installation: 
 
-The LoopGenie server code runs on python 3.8. There is a conda .yml file and a requirements.txt file to install dependencies with a virtualenv if preferred. 
+The LoopGenie server code runs on python 3.6-3.8. There is a conda .yml file and a requirements.txt file to install dependencies with a virtualenv if preferred. 
 
 ## Running Locally: 
 
 Until this code is packaged into a proper python library, running it locally simply requires installing the dependencies and importing our ```main.py``` file. 
 
 ```{python}
-import main 
+import mapper 
 
-json = main.run_system("location", distance, tripLength)
+location = "Squaw Valley, CA"
+distance, tripLength = 15, 15
+
+network = mapper.main(location, distance, tripLength)
+
+# save optimized network out to a gpx file
+mapper.save_gpx(trip, os.getcwd() + "/saved_trips/Squaw_Valley.gpx")
+
+# Get GeoJSON data from optimized network
+geojson = trip.save_geojson(mapper.Path)
 ```
 
 You can either load the geojson output directly into a mapping library or use the automatically save GPX file in the ```/save_trips``` directory. 
