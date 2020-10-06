@@ -16,7 +16,7 @@ def send_to_wh(connection_id, data):
 def lambda_handler(event, context):
     connection_id = event["connectionId"]
     location = event['location']
-    distance = int(event['distance'])*1000
+    distance = int(event['distance'])
     tripLength = int(event['tripLength'])
 
     trip = mapper.main(location, distance, tripLength)
