@@ -1,8 +1,6 @@
 import psycopg2
 import logging
 import sys
-import os
-
 
 def getTrails(long, lat, rad, secrets):
     """

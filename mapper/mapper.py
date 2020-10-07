@@ -24,10 +24,8 @@ snap_tolerance = 1e-4
 
 # TODO
     # * Select only the longest "duplicate" trail
-    # * Database side of tool
-    # * Integrate location so it uses a location and DB results rather than a folder
-    # * Geospatial database to hold tracks
-    # * Download and add tracks if not downloaded
+    # * Geospatial database to hold tracks (Completed)
+    # * Download and add tracks if not downloaded (?)
     # * Subset to use data in location
     # * add campground/land-type layer (http://www.ultimatecampgrounds.com/index.php/products/full-map)
     # http://www.uscampgrounds.info/
@@ -53,7 +51,6 @@ class Track():
             self.points.append((xy[0][i],xy[1][i]))
         self.name = trail[0]
         self.track = self.check_track(geom)
-        
         
     def check_track(self, track):
         """
@@ -319,17 +316,16 @@ class TripPlanner():
         self.connect_tracks()
 
     
-    def load_all_tracks(self): # we need to take geoJSON and not GPX now
+    def load_all_tracks(self):
         if self.tracks:
             return self.tracks
             
         for geoj in self.file_list: # this is going to loop through ('trail_name', 'hex value of geometry')
-            try: # only valid trails can be returned from mongo, so maybe don't need this anymore
-                geotrack = Track(geoj) # track takes filename 
+            try: # only valid trails can be returned from PostGIS, so maybe don't need this anymore
+                geotrack = Track(geoj) # track takes filename, ('trailname', 'hex value')
                 self.tracks[geotrack.name] = geotrack
-            except Exception as e:# this is a dated exception with PostGIS db
-                print(e)
-                raise Exception("Could not load track %s" % geoj[1]['properties']['name'])        
+            except Exception as e: # this is a dated exception with PostGIS db
+                print(e)       
         return self.tracks
 
             
@@ -366,9 +362,8 @@ class TripPlanner():
                 self.trail_network.add_node(path.origin)
                 self.trail_network.add_node(path.destination)
                 self.trail_network.add_edge(path.origin, path.destination, length=path.distance, name=key) 
-               
-            
         pass 
+
     def add_paths(self):
         """
         Creates a simplified, relational path network for the LP problem
