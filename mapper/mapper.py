@@ -10,6 +10,10 @@ import os
 import json
 import numpy as np
 import requests
+# imports for AWS SecretsManager
+import boto3
+import base64
+from botocore.exceptions import ClientError
 
 
 global km_to_degree 
@@ -377,6 +381,50 @@ class TripPlanner():
                 if node not in self.nodes:
                     self.nodes.append(node)            
 
+
+def get_secret():
+    '''
+    Obtain AWS Secret for RDS connection and API connections
+    '''
+    secret_name = "LoopGenie_server_keys"
+    region_name = "us-east-2"
+
+    # Create a Secrets Manager client
+    session = boto3.session.Session()
+    client = session.client(
+        service_name='secretsmanager',
+        region_name=region_name
+    )
+
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+    except ClientError as e:
+        if e.response['Error']['Code'] == 'DecryptionFailureException':
+            # Secrets Manager can't decrypt the protected secret text using the provided KMS key.
+            raise e
+        elif e.response['Error']['Code'] == 'InternalServiceErrorException':
+            raise e
+        elif e.response['Error']['Code'] == 'InvalidParameterException':
+            # You provided an invalid value for a parameter.
+            raise e
+        elif e.response['Error']['Code'] == 'InvalidRequestException':
+            # You provided a parameter value that is not valid for the current state of the resource.
+            raise e
+        elif e.response['Error']['Code'] == 'ResourceNotFoundException':
+            # We can't find the resource that you asked for.
+            raise e
+    else:
+        # Decrypts secret using the associated KMS CMK.
+        # Depending on whether the secret is a string or binary, one of these fields will be populated.
+        if 'SecretString' in get_secret_value_response:
+            secret = get_secret_value_response['SecretString']
+        else:
+            decoded_binary_secret = base64.b64decode(get_secret_value_response['SecretBinary'])
+            
+    return json.loads(secret)
+
 def setup_argparser():
     import argparse
     parser = argparse.ArgumentParser(description='Generate Backpacking Trips')
@@ -387,8 +435,8 @@ def setup_argparser():
     args = parser.parse_args()
     return args
 
-def LocationName(location):
-    url = "https://{}.execute-api.us-east-2.amazonaws.com/Prod/geocode/api/v1/geocode?q={}".format(os.environ['API_DNS'], location)
+def LocationName(location, secrets):
+    url = "https://{}.execute-api.us-east-2.amazonaws.com/Prod/geocode/api/v1/geocode?q={}".format(secrets['API_DNS'], location)
     response = requests.request("GET", url)
     json = response.json()['items'][0]["position"]
     lat, lon = json['lat'], json['lng']
@@ -431,8 +479,9 @@ def main(location, distance, tripLength):
     tripLength: int
         The distance you would like to hike in km
     '''
-    coords = LocationName(location)
-    trails = dbConn.getTrails(coords[1], coords[0], distance*1000)   
+    secrets = get_secret()
+    coords = LocationName(location, secrets)
+    trails = dbConn.getTrails(coords[1], coords[0], distance*1000, secrets)   
     if (trails == []):
         raise Exception("No trails found in that area, please increase distance or change locations")
     network = setup_trips(trails, location)
@@ -459,5 +508,5 @@ if __name__ == '__main__':
 
     output_location = os.getcwd() + "/saved_trips/{}.gpx".format(location)
 
-    trip = run_system(location, distance, tripLength)
+    trip = main(location, distance, tripLength)
     save_gpx(trip, output_location)
